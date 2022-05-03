@@ -1,0 +1,30 @@
+---
+title: "covidstats"
+author: "Max Brehmer"
+date: "5/2/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(utils)
+library(tidyverse)
+library(ISOweek)
+library(stringi)
+```
+
+```{r, include=TRUE}
+source("script_1.R", local = knitr::knit_global())
+# or sys.source("your-script.R", envir = knitr::knit_global())
+
+data <- read_csv("data.csv")
+
+dataCut <- data %>%
+  select(country, continent, population, indicator, weekly_count, year_week, rate_14_day, cumulative_count) %>%
+  mutate(year_week = gsub("-", "-W", year_week), year_week = gsub("$", "-1", year_week), year_week = ISOweek2date(year_week)) %>%
+  rename(date = year_week)
+
+knitr::kable(head(dataCut, 400))
+```
+
